@@ -160,7 +160,13 @@ p_\theta(x^{0:K}) = p(x^K) \prod_{k=1}^K p_\theta(x^{k-1}|x^k)
 $$
 其中：
 
-- $p(x^K) = \mathcal{N}(0, I)$：初始是纯噪声
+- $x^{0:K}$: 表示序列 ($x^0, x^1, ..., x^K$), 其中:
+    - $x^0$: 原始数据 (如图像、音频等)。
+    - $x^k$ ($k = 1, ..., K$): 添加噪声后的中间状态, $x^K$ 是完全的纯噪声。
+- $p(x^K)$: 噪声的先验分布, 通常是标准高斯分布 $\mathcal{N}(0, I)$。它描述扩散过程结束时的噪声状态。
+- $p_\theta(x^{k-1}|x^k)$: 参数化的逆向转移概率。给定当前噪声状态 $x^k$, 它预测前一步的“去噪”状态 $x^{k-1}$。这是由神经网络 (如U-Net) 参数化的, 其中 $\theta$ 是模型的可学习参数。
+- $\prod_{k=1}^{K}$: 表示逆向过程是一个马尔可夫链, 每一步仅依赖前一步的状态。
+
 - 每一步：$p_\theta(x^{k-1}|x^k) = \mathcal{N}(x^{k-1}; \mu_\theta(x^k, k), \sigma_k^2 I)$
 
 $\mu_\theta(x^k, k)$ 是通过神经网络预测的均值（代表我们“去噪”后的猜测）
@@ -347,3 +353,49 @@ $$
 - $\nabla_{x^k} \log p(c | x^k)$：**这个告诉你：怎么让生成结果更像你要的条件**
 - $s$：引导强度（可以控制“像条件”还是“保持自然”）
 
+## 2.3 Related Papers
+
+### 2.3.1 TimeGrad
+
+Autoregressive Denoising Diffusion Models for Multivariate Probabilistic Time Series Forecasting (2021) 
+
+#### 🧠什么是 Autoregressive？（自回归）
+
+**Autoregressive（AR，自回归）** 是时间序列建模里很经典的概念：
+
+> 一个模型是“自回归的”，意思是：
+>  **当前时刻的输出依赖于前面已经预测出来的结果。**
+
+#### 🔍 在 TimeGrad 中“Autoregressive”的体现
+
+TimeGrad 预测的是未来的多步值（例如未来 24 步的电力需求），它没有一次性同时输出全部，而是**一步一步地预测：**
+$$
+x_1 \rightarrow x_2 \rightarrow x_3 \rightarrow \cdots \rightarrow x_F
+$$
+
+------
+
+🧱 **对应公式位置在哪**？
+
+✅ 公式 (36)：
+$$
+p_\theta(X^{0:K}_{tar} \mid X_{obs}) = \prod_{t=1}^F p_\theta(x^{0:K}_t \mid h_{t-1})
+$$
+这句话的意思是：**第 $t$ 个未来值的预测，是依赖于前 $t-1$ 步的信息的。**
+
+而 $h_{t-1}$ 是通过 RNN 来编码前面历史+预测结果得到的隐藏状态。
+
+------
+
+✅ 公式 (35)：
+$$
+h_t = \text{RNN}_\theta(\text{concat}(x^v_t, c_t), h_{t-1})
+$$
+
+- RNN 本质上就是一种自回归结构，因为每一步的输出都要用上前一步的隐藏状态。
+- 在 TimeGrad 里，这个隐藏状态 $h_{t-1}$ 会影响下一个时间点的预测。
+
+#### ✅ 总结一句话：
+
+> **TimeGrad 之所以叫 “Autoregressive”，是因为它是一步一步预测未来的时间点，每一步都依赖于前面已经预测的内容，这种结构就叫自回归。**
+>  它的“自回归性”体现在：使用 RNN 的隐藏状态 $h_{t-1}$ 来预测每一个时间步，并且每一个未来点是按顺序、递推地预测出来的。
