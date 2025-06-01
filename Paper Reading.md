@@ -123,11 +123,67 @@ MSE和MAE关注的是平均误差，是**一个点预测值**和实际值之间�
 
 **扩散模型通过“加噪-去噪”的过程训练生成器模型**，通过 KL 散度或噪声预测损失来训练神经网络，最终实现“从噪声中生成高质量数据”的目标。
 
-### 2.2.1 KL散度损失 
+### 2.2.1 Denoising Diffusion Probabilistic Model (DDPM)
+
+#### 📈 正向过程（Forward Process）公式 (6)-(8)
+
+##### 1. 公式 (6)：加噪声的马尔可夫过程
+
+$$
+q(x^{1:K}|x^0) = \prod_{k=1}^{K} q(x^k | x^{k-1})\quad \text{且 } q(x^k | x^{k-1}) = \mathcal{N}(x^k; \sqrt{1 - \beta_k}x^{k-1}, \beta_k I)
+$$
+
+表示：每一步用一个高斯噪声扰动前一步的结果。
+
+- $\beta_k$：第 k 步的噪声强度
+- $\mathcal{N}(\cdot, \cdot)$：高斯分布
+
+------
+
+##### 2. 公式 (7)-(8)：一步计算任意时刻的结果
+
+你可以从初始数据 $x^0$ 一步跳到任意时间步 $x^k$，不需要按步骤模拟：
+$$
+x^k = \sqrt{\alpha_k} x^0 + \sqrt{1 - \alpha_k} \cdot \epsilon,\quad \epsilon \sim \mathcal{N}(0, I)
+$$
+
+- 这里 $\alpha_k = \prod_{i=1}^{k} (1 - \beta_i)$
+- 实际意思：噪声成分越来越多，$x^k$ 越来越“模糊”
+
+------
+
+#### 🔁 反向过程（Reverse Process）公式 (9)-(10)
+
+反向过程是模型学习的目标：从纯噪声一步步“还原”出干净数据。
+$$
+p_\theta(x^{0:K}) = p(x^K) \prod_{k=1}^K p_\theta(x^{k-1}|x^k)
+$$
+其中：
+
+- $p(x^K) = \mathcal{N}(0, I)$：初始是纯噪声
+- 每一步：$p_\theta(x^{k-1}|x^k) = \mathcal{N}(x^{k-1}; \mu_\theta(x^k, k), \sigma_k^2 I)$
+
+$\mu_\theta(x^k, k)$ 是通过神经网络预测的均值（代表我们“去噪”后的猜测）
+
+------
+
+##### 公式 (10)：可选择的方差
+
+$$
+\sigma_k^2 = 
+\begin{cases}
+\frac{\beta_k}{\hat{\beta}_k}, & \text{如果 } x^0 \sim \mathcal{N}(0, I) \\
+\frac{1 - \alpha_{k-1}}{1 - \alpha_k}, & \text{如果 } x^0 是确定的
+\end{cases}
+$$
+
+#### 🧠训练目标（公式 11-15）
+
+##### 1. KL散度损失(11)
 
 我们希望学习的分布 $p_\theta(x^{k-1}|x^k)$ 能够尽量接近真实的后验分布 $q(x^{k-1}|x^k)$
 
-### 2.2.2 重参数化目标
+##### 2. 重参数化目标(12)-(15)
 
 通过推导，可以把损失变成如下形式：
 $$
@@ -148,7 +204,7 @@ $$
 \mathcal{L}_\epsilon = \mathbb{E}_{x,k,\epsilon} \left[ \|\epsilon - \epsilon_\theta(x^k, k)\|^2 \right]
 $$
 
-### 2.2.3 Score-based generative modeling through SDE
+### 2.2.2 Score-based generative modeling through SDE
 
 扩散模型的目标是：从随机噪声中一步步“反推出”真实数据。为了让这个过程更精细和灵活，有人提出可以用 **连续时间的数学模型：随机微分方程（SDE）** 来描述这个“加噪声”和“去噪声”的过程。
 
@@ -230,3 +286,64 @@ $$
 
 > 公式 (18)-(23) 是在告诉你，扩散模型可以用“连续时间的数学语言（SDE/ODE）”来描述和实现。
 >  正向是不断加噪，反向是沿着得分方向去噪。为了更可控，还可以用概率流 ODE 实现一个**无噪声的确定性生成过程**。
+
+### 2.2.3 Conditional Diffusion
+
+#### ✨ 第一种方式：**条件建模 during 训练阶段**（图 Figure 8）
+
+这其实和普通去噪过程类似，只不过我们在模型输入里**加上了条件 `c`**。
+
+**对应公式：**
+$$
+p_\theta(x^{k-1}|x^k, c) = \mathcal{N}(x^{k-1}; \mu_\theta(x^k, k, c), \sigma_k^2 I)
+$$
+和之前的反向过程几乎一样，只是现在每一步都带上了条件 `c`。
+
+**模型预测的方式也被“加了条件”：**
+
+- 噪声预测方式：
+  $$
+  \mu_\epsilon(\epsilon_\theta, c)
+  $$
+
+- 原图预测方式：
+  $$
+  \mu_x(x_\theta, c)
+  $$
+
+这些公式都和之前一样，只不过神经网络接收了额外的条件输入 `c`，图 Figure 8 也说明了这一点。
+
+------
+
+#### 🧲 第二种方式：**Diffusion Guidance during 推理阶段**（图 Figure 9）
+
+这是一种更灵活、更聪明的方法：**在推理（采样）的时候再引导模型往“目标方向”生成**。
+
+也就是：
+
+- 模型原来训练的时候没带条件
+- 但现在我可以在采样的时候，用**贝叶斯规则**引导它往想要的样子靠近！
+
+------
+
+**用贝叶斯公式重新写条件概率：**
+$$
+p(x^k | c) \propto p(c | x^k) \cdot p(x^k)
+$$
+取对数后，推导出“引导梯度”：
+$$
+\nabla_{x^k} \log p(x^k | c) = \nabla_{x^k} \log p(c | x^k) + \nabla_{x^k} \log p(x^k)
+$$
+这个导数就是“往满足条件的方向微调”的方式。
+
+------
+
+✨ **最终采样方式变成**（公式 32）：
+$$
+p_\theta(x^{k-1}|x^k) = \mathcal{N}\left(\mu_\theta(x^k, k), \sigma_k^2 I\right) + s\sigma_k^2 \nabla_{x^k} \log p(c | x^k)
+$$
+红框里加了一项：
+
+- $\nabla_{x^k} \log p(c | x^k)$：**这个告诉你：怎么让生成结果更像你要的条件**
+- $s$：引导强度（可以控制“像条件”还是“保持自然”）
+
