@@ -164,7 +164,7 @@ $$
     - $x^0$: 原始数据 (如图像、音频等)。
     - $x^k$ ($k = 1, ..., K$): 添加噪声后的中间状态, $x^K$ 是完全的纯噪声。
 - $p(x^K)$: 噪声的先验分布, 通常是标准高斯分布 $\mathcal{N}(0, I)$。它描述扩散过程结束时的噪声状态。
-- $p_\theta(x^{k-1}|x^k)$: 参数化的逆向转移概率。给定当前噪声状态 $x^k$, 它预测前一步的“去噪”状态 $x^{k-1}$。这是由神经网络 (如U-Net) 参数化的, 其中 $\theta$ 是模型的可学习参数。
+- $p_\theta(x^{k-1}|x^k)$: 参数化的逆向转移概率。给定当前噪声状态 $x^k$, 它预测前一步的“去噪”状态 $x^{k-1}$。这是由神经网络参数化的, 其中 $\theta$ 是模型的可学习参数。
 - $\prod_{k=1}^{K}$: 表示逆向过程是一个马尔可夫链, 每一步仅依赖前一步的状态。
 
 - 每一步：$p_\theta(x^{k-1}|x^k) = \mathcal{N}(x^{k-1}; \mu_\theta(x^k, k), \sigma_k^2 I)$
@@ -426,3 +426,53 @@ Conditional Score-based Diffusion Models for Probabilistic Time Series Imputatio
 | 条件信息编码       | 用 RNN 或其他模型编码历史信息 | 用 Transformer 编码条件位置            |
 | 是否按时间顺序生成 | 是（autoregressive）          | 否，可以并行补全多个位置               |
 | 特点               | 适合 forecasting              | 适合 imputation（带 mask）             |
+
+### 2.3.4 DSPD & CSPD
+
+DSPD & CSPD: Modeling Temporal Data as Continuous Functions with Process Diffusion (2022)
+
+#### ❓问题 1：
+
+**“TimeGrad 和 DSPD 除了噪声改动外，是否其他方面是相似的？”**
+
+#### ✅ 表面上的相似性：
+
+- **RNN 提取历史条件 z**：两者都使用 RNN 编码历史序列，作为预测未来序列的条件向量。
+- **预测目标一致**：都用于多步时间序列预测任务。
+- **架构均基于 DDPM 思路（反向预测）**：通过多个反向扩散步骤来逐步构建未来时间点的预测。
+- **使用重参数化技术预测噪声 ε**。
+- **优化目标函数形式一致**（如 Equation 48 所示）。
+
+#### ❗本质性差异：
+
+1. **噪声建模方式根本不同**：
+   - **TimeGrad** 采用 *独立同分布（i.i.d）* 噪声（通常是标准正态分布）。
+   - **DSPD** 采用 *时间相关的高斯过程噪声*，即 ϵ(⋅)∼GP\epsilon(\cdot) \sim \mathcal{GP}ϵ(⋅)∼GP，并假设噪声在不同时间步间有结构性相关性。
+   - 这导致模型生成序列时具有更平滑、连贯的行为。
+2. **多步联合预测 vs 单步递归预测**：
+   - **TimeGrad** 主要是单步预测再递归多步。
+   - **DSPD** 在架构上进行了改进，可以一次性预测多个时间点（见第一张图第二段：“...predict multiple values at the same time...”）。
+3. **输入建模维度变化**：
+   - DSPD 使用 2D 卷积（替代 RNN 的堆叠结构）处理时间序列，以提升并行性。
+   - TimeGrad 使用标准 RNN 结构逐步编码序列。
+
+> ✅ **结论**：虽然 TimeGrad 和 DSPD 在目标和部分架构上相似，但 DSPD 通过改变噪声建模方式 + 并行多步预测机制，对原始架构进行了关键性的提升。它不是一个简单“加上 GP”的 TimeGrad，而是一个从噪声建模到计算效率都做了全面优化的系统。
+
+#### ❓问题 2：
+
+**“ScoreGrad 可以用于预测，那 CSPD 是 ScoreGrad 吗？”**
+
+虽然 ScoreGrad 和 CSPD：
+
+- 都使用 **连续时间扩散（SDE）** 建模；
+- 都依赖 **score function** 训练机制；
+- 都用于 **时间序列预测**；
+
+但 CSPD **在实现上做了两个关键性结构修改**，从而将 ScoreGrad 的通用框架改造成一个专门用于高效预测的模型：
+
+1. **噪声建模层面**：CSPD 引入 **高斯过程噪声**，而不是 ScoreGrad 中的独立噪声。
+2. **时间编码架构上**：CSPD 明确使用 RNN + 并行预测机制（一次性预测多个时间点），而 ScoreGrad 的结构依赖用户选用 Transformer 等并未统一。
+
+因此：
+
+> **CSPD ≠ ScoreGrad，但它可以看作是“ScoreGrad 在预测任务上的结构性进化版本”。**
