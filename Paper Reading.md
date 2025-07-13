@@ -447,7 +447,7 @@ DSPD & CSPD: Modeling Temporal Data as Continuous Functions with Process Diffusi
 
 1. **噪声建模方式根本不同**：
    - **TimeGrad** 采用 *独立同分布（i.i.d）* 噪声（通常是标准正态分布）。
-   - **DSPD** 采用 *时间相关的高斯过程噪声*，即 ϵ(⋅)∼GP\epsilon(\cdot) \sim \mathcal{GP}ϵ(⋅)∼GP，并假设噪声在不同时间步间有结构性相关性。
+   - **DSPD** 采用 *时间相关的高斯过程噪声*，即 $\epsilon(\cdot) \sim \mathcal{GP}$，并假设噪声在不同时间步间有结构性相关性。
    - 这导致模型生成序列时具有更平滑、连贯的行为。
 2. **多步联合预测 vs 单步递归预测**：
    - **TimeGrad** 主要是单步预测再递归多步。
@@ -476,3 +476,26 @@ DSPD & CSPD: Modeling Temporal Data as Continuous Functions with Process Diffusi
 因此：
 
 > **CSPD ≠ ScoreGrad，但它可以看作是“ScoreGrad 在预测任务上的结构性进化版本”。**
+
+### 2.3.5 D³VAE
+
+Generative Time Series Forecasting with Diffusion, Denoise, and Disentanglement (2022)
+
+#### 🧱 核心创新结构
+
+| 模块                        | 解释                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| 🔁 Coupled Diffusion Process | 对历史和未来窗口同时加噪声，使生成过程更鲁棒；并通过理想+噪声分解（Equations 49 & 50）缓解噪声传播问题 |
+| 🧠 BVAE                      | 使用观测值 $X^{k}_{obs}$ 编码潜变量  $Z∼p_\theta(Z∣X^{k}_{tar})$ |
+| 🧼 DSM                       | 单步梯度修正预测结果，引导样本更贴近真实分布（Equation 51）  |
+| 🎯 Loss 组合                 | 总损失包括 KL 散度、DSM loss、解耦 loss、重构误差（Equation 52） |
+
+#### 🧐 批判性优缺点分析
+
+| 优势                                                 | 劣势                                                      |
+| ---------------------------------------------------- | --------------------------------------------------------- |
+| ✅ 出色的小样本表现能力，鲁棒性强                     | ❗ 训练复杂、超参数众多、难以收敛                          |
+| ✅ 同时建模两种不确定性（模型 & 数据）                | ❗ 在大数据情形下略显结构冗余                              |
+| ✅ 使用耦合扩散，理论上比 ScoreGrad / TimeGrad 更完整 | ❗ 训练过程高度依赖特定调参和初始化策略                    |
+| ✅ 解耦 latent variable 提升解释性                    | ❗ 未在标准 GluonTS 数据上做直接对比，结果可迁移性尚需验证 |
+
