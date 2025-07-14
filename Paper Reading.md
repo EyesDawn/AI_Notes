@@ -386,6 +386,12 @@ $$
 
 而 $h_{t-1}$ 是通过 RNN 来编码前面历史+预测结果得到的隐藏状态。
 
+✅ 公式 (37)：
+$$
+p_0(X_{tar}^{0:K} | X_{obs}) = \prod_{t=1}^F p(x_t^K) \prod_{k=1}^K p(x_t^{k-1} | x_t^k, \mathbf{h}_{t-1})
+$$
+注意这里的写法是 $\prod_{t=1}^F \prod_{k=1}^K$，即对每个未来时间步，都做 $K$ 步扩散。这种建模方式其实是“自回归”思想的延伸，每个时间步都条件于之前的历史和预测。公式（37）实际上把 DDPM 的单样本扩散，变成了“每个时间步独立扩散”，并用 RNN 编码历史。
+
 ------
 
 ✅ 公式 (35)：
@@ -499,3 +505,20 @@ Generative Time Series Forecasting with Diffusion, Denoise, and Disentanglement 
 | ✅ 使用耦合扩散，理论上比 ScoreGrad / TimeGrad 更完整 | ❗ 训练过程高度依赖特定调参和初始化策略                    |
 | ✅ 解耦 latent variable 提升解释性                    | ❗ 未在标准 GluonTS 数据上做直接对比，结果可迁移性尚需验证 |
 
+### 2.3.6 TDSTF
+
+Transformer-based Diffusion probabilistic model for Sparse Time series Forecasting
+
+#### 🧱 核心创新结构
+
+TDSTF 模型受到 CSDI 的启发，主要用于 ICU 病人生命体征的稀疏多变量时间序列预测。它的核心创新在于：
+
+- **三元组表示法**：模型用 (特征, 时间, 数值) 的三元组形式来表达稀疏数据，同时还配有一个 mask，标记该三元组数据是否存在。
+- **Transformer 编码器**：用 Transformer 网络对历史数据进行编码，自动选择最相关的数据点作为输入。
+
+这种设计非常适合处理临床数据的稀疏性，既能保护时间信息的完整性，又能减少插值或聚合带来的噪声。
+
+#### 🧐 批判性优缺点分析
+
+- **优势：** TDSTF 在稀疏数据场景下表现优异，尤其适合医疗等对数据完整性要求高的领域。
+- **疑问：** 其三元组与 mask 的设计是否真的能泛化到其他稀疏场景？模型在数据极度缺失或噪声极大的情况下仍能保持优势吗？
