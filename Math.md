@@ -217,6 +217,18 @@ $$
 >
 > 贝叶斯定理是一种“**用新信息来更新旧认知**”的方法。
 
+先验分布和后验分布之间有个核心关系：
+
+$$
+p(\theta \mid \text{data}) \propto p(\text{data} \mid \theta)\,p(\theta)
+$$
+
+这里：
+
+* $p(\theta)$ 是先验（在看到数据之前的“信念”，其中 $\theta$ 表示未知参数）
+* $p(\text{data} \mid \theta)$ 是似然（数据对参数的支持程度）
+* $p(\theta \mid \text{data})$ 是后验（结合数据之后更新过的“信念”）
+
 ## 3.3 L2 norm
 
 L2 范数（L2 norm）是向量空间中长度的度量，也称为欧几里得范数（Euclidean norm）。它的核心含义是计算一个向量在几何空间中的“直线距离”。
@@ -224,7 +236,7 @@ L2 范数（L2 norm）是向量空间中长度的度量，也称为欧几里得�
 ---
 
 1. **数学定义**
-对于一个 $ n $ 维向量 $ \mathbf{x} = (x_1, x_2, \dots, x_n) $，L2 范数的计算公式为：
+对于一个 $n$ 维向量 $\mathbf{x} = (x_1, x_2, \dots, x_n)$，L2 范数的计算公式为：
 $$
 \|\mathbf{x}\|_2 = \sqrt{x_1^2 + x_2^2 + \cdots + x_n^2}
 $$
@@ -235,19 +247,19 @@ $$
 2. **几何意义**
 • 向量的长度：L2 范数表示从原点（零向量）到该点的欧几里得距离。  
 
-  例如：二维向量 $ (3, 4) $ 的 L2 范数是 $ \sqrt{3^2 + 4^2} = 5 $，即它在平面坐标系中到原点的距离为 5。
+  例如：二维向量 $(3, 4)$ 的 L2 范数是 $\sqrt{3^2 + 4^2} = 5$，即它在平面坐标系中到原点的距离为 5。
 
 ---
 
 3. **机器学习和优化中的意义**
 在机器学习中，L2 范数常用于：
-• 正则化（Regularization）：在损失函数中加入 L2 范数惩罚项（即 L2 正则化），迫使模型参数 $ \theta $ 趋向较小的值，防止过拟合。  
+• 正则化（Regularization）：在损失函数中加入 L2 范数惩罚项（即 L2 正则化），迫使模型参数 $\theta$ 趋向较小的值，防止过拟合。  
 
   例如：损失函数变为：
 $$
   \text{Loss} = \text{原始损失} + \lambda \cdot \|\theta\|_2^2
 $$
-  其中 $ \lambda $ 是正则化强度系数。
+  其中 $\lambda$ 是正则化强度系数。
 
 • 衡量误差：L2 范数可以表示预测值与真实值之间的差距（如均方误差 MSE）。
 
@@ -263,7 +275,7 @@ $$
 ---
 
 5. **对比 L1 范数**
-• L1 范数：定义为绝对值之和 $ \|\mathbf{x}\|_1 = |x_1| + |x_2| + \cdots + |x_n| $，常用于稀疏化参数（使部分参数为零）。  
+• L1 范数：定义为绝对值之和 $\|\mathbf{x}\|_1 = |x_1| + |x_2| + \cdots + |x_n|$，常用于稀疏化参数（使部分参数为零）。  
 
 • L2 范数：倾向于让参数接近零但不完全为零，适合需要平滑解的场景。
 
@@ -363,21 +375,21 @@ $$
 
 ## 4.1 最大化期望与最小化交叉熵/ KL 散度的关系
 
-为什么 最大化期望 $ E_{x \sim P_{\text{data}}}[\log P_\theta(x)] $ 等价于最小化交叉熵（Cross-Entropy）或 KL 散度?
+为什么 最大化期望 $E_{x \sim P_{\text{data}}}[\log P_\theta(x)]$ 等价于最小化交叉熵（Cross-Entropy）或 KL 散度?
 
 ---
 
 1. **交叉熵（Cross-Entropy）的定义**
-交叉熵衡量的是用模型分布 $ P_\theta(x) $ 编码来自真实分布 $ P_{\text{data}}(x) $ 的数据所需的平均信息量：
+交叉熵衡量的是用模型分布 $P_\theta(x)$ 编码来自真实分布 $P_{\text{data}}(x)$ 的数据所需的平均信息量：
 $$
 H(P_{\text{data}}, P_\theta) = -E_{x \sim P_{\text{data}}}[\log P_\theta(x)].
 $$
-因此，最大化 $ E_{x \sim P_{\text{data}}}[\log P_\theta(x)] $ 等价于最小化交叉熵。
+因此，最大化 $E_{x \sim P_{\text{data}}}[\log P_\theta(x)]$ 等价于最小化交叉熵。
 
 ---
 
 2. **KL 散度的定义**
-KL 散度（Kullback-Leibler Divergence）衡量真实分布 $ P_{\text{data}} $ 和模型分布 $ P_\theta $ 之间的差异：
+KL 散度（Kullback-Leibler Divergence）衡量真实分布 $P_{\text{data}}$ 和模型分布 $P_\theta$ 之间的差异：
 $$
 D_{\text{KL}}(P_{\text{data}} \parallel P_\theta) = E_{x \sim P_{\text{data}}}\left[\log \frac{P_{\text{data}}(x)}{P_\theta(x)}\right].
 $$
@@ -386,7 +398,7 @@ $$
 D_{\text{KL}} = \underbrace{E_{x \sim P_{\text{data}}}[\log P_{\text{data}}(x)]}_{-H(P_{\text{data}})} - E_{x \sim P_{\text{data}}}[\log P_\theta(x)].
 $$
 其中：
-• $ H(P_{\text{data}}) $ 是真实分布的熵（固定值，与 $ \theta $ 无关）。
+• $H(P_{\text{data}})$ 是真实分布的熵（固定值，与 $\theta$ 无关）。
 
 
 ---
@@ -396,7 +408,7 @@ $$
 $$
 D_{\text{KL}}(P_{\text{data}} \parallel P_\theta) = H(P_{\text{data}}, P_\theta) - H(P_{\text{data}}).
 $$
-由于 $ H(P_{\text{data}}) $ 是常数，最小化交叉熵 $ H(P_{\text{data}}, P_\theta) $ 等价于最小化 KL 散度。
+由于 $H(P_{\text{data}})$ 是常数，最小化交叉熵 $H(P_{\text{data}}, P_\theta)$ 等价于最小化 KL 散度。
 
 ---
 
@@ -413,27 +425,27 @@ $$
 ---
 
 5. **直观理解**
-• 最大化对数似然：让模型 $ P_\theta(x) $ 对真实数据 $ x \sim P_{\text{data}} $ 赋予更高的概率。
+• 最大化对数似然：让模型 $P_\theta(x)$ 对真实数据 $x \sim P_{\text{data}}$ 赋予更高的概率。
 
-• 最小化交叉熵：减少用 $ P_\theta(x) $ 编码真实数据所需的额外信息量。
+• 最小化交叉熵：减少用 $P_\theta(x)$ 编码真实数据所需的额外信息量。
 
-• 最小化 KL 散度：迫使模型分布 $ P_\theta $ 逼近真实分布 $ P_{\text{data}} $。
+• 最小化 KL 散度：迫使模型分布 $P_\theta$ 逼近真实分布 $P_{\text{data}}$。
 
 
 ---
 
 6. **补充说明**
-• 熵 $ H(P_{\text{data}}) $：表示数据本身的固有不确定性，与模型无关。
+• 熵 $H(P_{\text{data}})$：表示数据本身的固有不确定性，与模型无关。
 
-• 交叉熵 $ H(P_{\text{data}}, P_\theta) $：包含数据不确定性（$ H(P_{\text{data}}) $）和模型误差（$ D_{\text{KL}} $）。
+• 交叉熵 $H(P_{\text{data}}, P_\theta)$：包含数据不确定性（$H(P_{\text{data}})$）和模型误差（$D_{\text{KL}}$）。
 
-• KL 散度非对称性：$ D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P) $，这里目标是让 $ P_\theta $ 覆盖 $ P_{\text{data}} $。
+• KL 散度非对称性：$D_{\text{KL}}(P \parallel Q) \neq D_{\text{KL}}(Q \parallel P)$，这里目标是让 $P_\theta$ 覆盖 $P_{\text{data}}$。
 
 
 ---
 
 总结
-最大化对数似然 $ E_{x \sim P_{\text{data}}}[\log P_\theta(x)] $ 的本质是：  
-通过最小化交叉熵或 KL 散度，使模型分布 $ P_\theta $ 尽可能接近真实分布 $ P_{\text{data}} $。  
+最大化对数似然 $E_{x \sim P_{\text{data}}}[\log P_\theta(x)]$ 的本质是：  
+通过最小化交叉熵或 KL 散度，使模型分布 $P_\theta$ 尽可能接近真实分布 $P_{\text{data}}$。  
 这是最大似然估计（MLE）与信息论之间的深刻联系。
 

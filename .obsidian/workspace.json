@@ -1,0 +1,222 @@
+{
+  "main": {
+    "id": "54ceca9f703db342",
+    "type": "split",
+    "children": [
+      {
+        "id": "8143ece6443ea6eb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4228aa2d083d8cf6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Machine Learning.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Machine Learning"
+            }
+          },
+          {
+            "id": "72f9763595a92888",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Paper Reading.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Paper Reading"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "493f322d952ca807",
+    "type": "split",
+    "children": [
+      {
+        "id": "41e135d7c5053323",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c14dfa16b9497004",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "915e6496906554da",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Machine Learning.md",
+                "followCursor": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Machine Learning 的大纲"
+            }
+          },
+          {
+            "id": "90b587a3f760cfca",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "7013e1936471062c",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 240.49999618530273
+  },
+  "right": {
+    "id": "11deebcf3f50d6ff",
+    "type": "split",
+    "children": [
+      {
+        "id": "95f4ba22728a2ff9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1652ead1df879b70",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Paper Reading.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Paper Reading 的反向链接列表"
+            }
+          },
+          {
+            "id": "334bf6ba3a9a00bc",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Machine Learning.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Machine Learning 的出链列表"
+            }
+          },
+          {
+            "id": "6b7d71a3b376e2e7",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "019a61829daad388",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Machine Learning.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Machine Learning 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "math-indicator-changer:Change math indicator": false
+    }
+  },
+  "active": "4228aa2d083d8cf6",
+  "lastOpenFiles": [
+    "Paper Reading.md",
+    "time-series/Are Transformers Effective for Time Series Forecasting.pdf",
+    "time-series/Are Transformers Effective for Time Series Forecasting.pdf.crdownload",
+    "time-series",
+    "New folder",
+    "Machine Learning.md",
+    "配置变化.md",
+    "小指标运维.md",
+    "代码变化.md",
+    "xzb报表.md",
+    "功能变化.md",
+    "小指标的难点.md",
+    "Math.md",
+    "README.md",
+    "Conversation.md",
+    "1.md",
+    "Temp.md",
+    "未命名.canvas",
+    "2025-08-02.md"
+  ]
+}
