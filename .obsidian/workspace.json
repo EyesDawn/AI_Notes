@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Machine Learning.md",
+                "file": "Paper Reading.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Machine Learning"
+              "title": "Paper Reading"
             }
           },
           {
@@ -67,13 +67,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Machine Learning.md",
+                "file": "Paper Reading.md",
                 "followCursor": true,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Machine Learning 的大纲"
+              "title": "Paper Reading 的大纲"
             }
           },
           {
@@ -197,14 +197,14 @@
       "math-indicator-changer:Change math indicator": false
     }
   },
-  "active": "4228aa2d083d8cf6",
+  "active": "915e6496906554da",
   "lastOpenFiles": [
+    "Machine Learning.md",
     "Paper Reading.md",
     "time-series/Are Transformers Effective for Time Series Forecasting.pdf",
     "time-series/Are Transformers Effective for Time Series Forecasting.pdf.crdownload",
     "time-series",
     "New folder",
-    "Machine Learning.md",
     "配置变化.md",
     "小指标运维.md",
     "代码变化.md",

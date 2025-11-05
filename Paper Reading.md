@@ -120,8 +120,66 @@ $$
 \mathrm{CRPS}(\hat{F}_{i,t}^N,x_{i,t})=\int_{\mathbb{R}}\left(\hat{F}_{i,t}^N(z)-\mathbb{I}\{x_{i,t}\leq z\}\right)^2dz
 $$
 
-MSE和MAE关注的是平均误差，是**一个点预测值**和实际值之间的距离；而CRPS评估**概率预测的好坏** ，是预测的分布与阶跃分布（实际结果）之间的差距面积。
+MSE和MAE关注的是平均误差，是**点预测值**和实际值之间的距离；而CRPS评估**概率预测的好坏** ，是预测的分布与阶跃分布（实际结果）之间的差距面积。
 
+---
+**CRPS**
+对单一时刻 $t$ 和单一变量，设预测的累积分布函数为 $F_t(y)$，真实观测为 $y_t$。CRPS 定义为
+$$
+\mathrm{CRPS}(F_t, y_t) = \int_{-\infty}^{+\infty} \big(F_t(y) - \mathbb{1}_{y \ge y_t}\big)^2  dy.
+$$
+符号说明：
+
+- $F_t(y)$：对该时间点 $t$ 的预测CDF（单变量）；
+- $\mathbb{1}_{\cdot}$：指示函数（如果条件成立返回1，否则0）；
+- 积分是对所有标量值 $y$ 的平方误差求和（连续情形）。
+
+对**样本/集合（ensemble）表示**，若有 $N$ 个样本预测 $\{x_i\}_{i=1}^N$，一个常用的等价形式是：
+$$
+\mathrm{CRPS} = \frac{1}{N}\sum_{i=1}^N |x_i - y_t| - \frac{1}{2N^2}\sum_{i=1}^N\sum_{j=1}^N |x_i - x_j|.
+$$
+这两个式子等价且常用于基于样本的计算。符号解释见式中变量。
+
+**QICE**
+评估了**预测区间的可靠性**。在概率预测中，我们通常会提供一个预测区间，并期望真实值以一定的概率落在这个区间内。
+设模型预测的分位点为 $q_{\alpha}^{(t)}$，即预测第 $\alpha$ 分位数，真实值为 $y_t$，
+则覆盖率为：
+$$
+\text{Empirical Coverage}(\alpha) = \frac{1}{T} \sum_{t=1}^{T} \mathbb{1}[y_t \in (q_{(1-\alpha)/2}^{(t)}, q_{(1+\alpha)/2}^{(t)})]
+$$
+然后定义 QICE：
+$$
+\text{QICE} = \sum_{\alpha \in A} |\text{Empirical Coverage}(\alpha) - \alpha|
+$$
+其中 $A$ 是多个置信水平（如 0.1, 0.3, 0.5, 0.9）。
+QICE 衡量这些置信区间的**理论置信度**与**实际命中率**的差距 → 越小越好。
+
+---
+
+**Energy Score** 是 **CRPS 的多维推广形式**，并且不需要你知道 $p(y)$ 的表达式！
+
+在时间序列中，我们经常预测的是多维输出，例如：
+- **多步预测** (multi-step forecasting)：预测未来 $h$ 个时间点的值，即  
+  $$\mathbf{Y} = (Y_{t+1}, Y_{t+2}, ..., Y_{t+h})$$
+  是一个 $h$-维向量。
+- **多变量预测** (multivariate forecasting)：预测多个特征同时的未来值，例如温度、湿度、风速共同预测。
+这时，模型输出的不是一个标量分布，而是一个联合分布 $F(\mathbf{y}) \in \mathbb{R}^d$。
+
+Energy Score 定义为：
+$$ES(F, \mathbf{y}) = \mathbb{E}_F \|\mathbf{Y} - \mathbf{y}\| - \frac{1}{2} \mathbb{E}_F \|\mathbf{Y} - \mathbf{Y}'\|$$
+其中：
+- $\mathbf{Y}, \mathbf{Y}'$ 是从预测分布 $F$ 采样得到的两个独立样本；
+- $\|\cdot\|$ 表示欧几里得范数（或其他距离度量）。
+
+区别在于：
+- 一维 CRPS 用的是标量差的绝对值；
+- 多维 Energy Score 用的是向量之间的距离。
+
+直觉理解：
+- 第一项 $\mathbb{E}_F \|\mathbf{Y} - \mathbf{y}\|$：
+  惩罚预测样本和真实观测之间的距离（**准确性**）。
+- 第二项 $- \frac{1}{2} \mathbb{E}_F \|\mathbf{Y} - \mathbf{Y}'\|$：
+  奖励预测分布内部的多样性（**分布的"展开度"**）。
 ## 2.2 Diffusion Models
 
 **扩散模型通过“加噪-去噪”的过程训练生成器模型**，通过 KL 散度或噪声预测损失来训练神经网络，最终实现“从噪声中生成高质量数据”的目标。
@@ -725,10 +783,11 @@ TimeDiff 的做法是，把上面两个“小花招”产生的结果 ($z_{mix}$
 2.  **效率问题**：扩散模型为了生成高质量的样本，通常需要很多步的迭代（去噪），这使得它们的推理速度相对较慢。虽然比需要训练额外模型的引导方法要好，但在需要实时预测的场景下，这仍然是一个瓶颈。
 3.  **未来的融合**：我们再次回到那个问题：当大型语言模型（LLMs）展现出强大的序列建模能力时，我们是否应该考虑将这种精细的“概率引导”思想，与LLM的“常识推理”和“上下文理解”能力结合起来？也许未来的模型，既能像TSDiff一样给出精确的概率分布，又能像LLM一样理解事件的因果关系（比如“因为节假日，所以交通流量会异常增高”）。
 
-## 3 NsDiff
+# 3 NsDiff
 Non-stationary Diffusion For Probabilistic Time Series Forecasting
-### 3.2 实验
+## 3.2 实验
 
 > [!QUESTIONS] 
 > To estimate uncertainty variation between the train and test datasets, we use the ratio of test variance to train variance, selecting the highest value across dimensions to capture non-stationary uncertainty.
 > 什么是测试方差和训练方差的比率？
+
