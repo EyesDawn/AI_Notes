@@ -1,9 +1,9 @@
-# 1 FAN
+# 1 Basic Papers
 
-## 1.1 理解
+## 1.1 FAN
 1. FAN == DFT + RevIN：FAN在频域上利用傅里叶变换处理平稳与非平稳成分，而RevIN在时域上利用标准化处理。
 
-### 关于X y的形状
+### 1.1.1 关于X y的形状
 
 **训练集**：
 
@@ -30,7 +30,7 @@ y：targets, 也是 tensor, 形状是 (B, O, N), O: steps(*预测序列长度*)
 
 全局级Fourier：也X在时间维度上做变换，但变换完后，在batch和特征维度上取幅值的平均值。另外，top_k固定(TimesNet)。
 
-### FFT
+### 1.1.2 FFT
 
 在使用傅里叶变换（FFT）处理时间序列时，虽然变换后的形状与原始数据相同，但其**物理意义已完全不同**。以下是详细解释：
 
@@ -96,7 +96,7 @@ train_X_fft = train_X_fft.transpose(1, 2)  # (样本数, 通道数, 时间步数
 
 
 
-## 1.2 疑问
+### 1.1.3 疑问
 
 1.  为什么采用MLP来处理非平稳的信号？考虑到RNN捕获时间依赖信息的能力更强，为什么FAN没有考虑用LSTM、GRU？
    1.  实验结果显示3层MLP的效果最好，可能的原因是“主频率信号为骨干模型提供了基线位置，从而导致更稳健的预测”
@@ -791,3 +791,25 @@ Non-stationary Diffusion For Probabilistic Time Series Forecasting
 > To estimate uncertainty variation between the train and test datasets, we use the ratio of test variance to train variance, selecting the highest value across dimensions to capture non-stationary uncertainty.
 > 什么是测试方差和训练方差的比率？
 
+# 4 D3U
+Diffusion-based Decoupled Deterministic and Uncertain Framework for Probabilistic Multivariate Time Series Forecasting
+## 4.1 Motivation
+- Point forecasting models are less effective at modeling the residual component
+- Residual component tends to contain more uncertainty(epistemic and aleatoric)
+
+![[assets/Pasted image 20251123161622.png]]
+Questions
+- Are they really less effective? Or just some random components and not important?
+- Epistemic? Or just aleatoric
+## 4.2 Method
+![[assets/Pasted image 20251123163702.png]]
+- SparseVQ (Transformer-base with patching techniques) -> conditioning network
+- Experimental results demonstrate that leveraging $f_{enc}(x_h)$ as the guiding signal provides more effective guidance
+- DDPM: $r^0$ -> $r^k$ -> PatchDN -> Reverse
+## 4.3 Experiments
+![[assets/Pasted image 20251123165853.png]]
+- According to Table 1, the results of D3U and SparseVQ are quite similar!!
+- This similarity leads me to question whether the incorporation of probabilistic predictions and the utilization of diffusion models merely introduce randomness!
+## 4.4 Limitation
+![[assets/Pasted image 20251123170744.png]]Visualization of the Predictions of Eletricity (139th dimension). This case illustrates a  scenario with relatively low epistemic uncertainty. Probabilistic prediction: the mean of the diffusion model’s samples
+![[assets/Pasted image 20251123170924.png]]Visualization of the Predictions of Solar (50th dimension). This case illustrates a scenario with relatively high epistemic uncertainty. Probabilistic prediction: the mean of the diffusion model’s samples.

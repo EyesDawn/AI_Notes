@@ -79,7 +79,7 @@ $$
 
 ![image-20250204172313520](./assets/image-20250204172313520.png)
 
-潜空间：是分词器，one-hot 这2种表达方式的一个折中。
+潜空间：是tokenizer，one-hot 这2种表达方式的一个折中。
 
 #### Attention
 
@@ -446,11 +446,11 @@ $$
 
 ![image-20250202222109509](./assets/image-20250202222109509.png)
 
-| 特性               | CrossEntropyLoss           | NLLLoss(Negative Log Likelihood Loss) |
-| ------------------ | -------------------------- | ------------------------------------- |
-| 输入               | 原始 logits                | 对数概率（log-softmax 之后的值）      |
-| 需要 log_softmax？ | **不需要**，内部会自动计算 | **需要**，需手动调用 `log_softmax`    |
-| 适用场景           | 直接用于分类任务           | 适用于已经计算了 log-softmax 的情况   |
+| 特性              | CrossEntropyLoss | NLLLoss(Negative Log Likelihood Loss) |
+| --------------- | ---------------- | ------------------------------------- |
+| 输入              | 原始 logits        | 对数概率（log-softmax 之后的值）                |
+| 需要 log_softmax？ | **不需要**，内部会自动计算  | **需要**，需手动调用 `log_softmax`            |
+| 适用场景            | 直接用于分类任务         | 适用于已经计算了 log-softmax 的情况              |
 
 **总结：**
 
