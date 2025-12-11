@@ -1,6 +1,7 @@
 # 1 Basic Papers
 
 ## 1.1 FAN
+Frequency Adaptive Normalization For Non-stationary Time Series Forecasting
 1. FAN == DFT + RevIN：FAN在频域上利用傅里叶变换处理平稳与非平稳成分，而RevIN在时域上利用标准化处理。
 
 ### 1.1.1 关于X y的形状
@@ -415,9 +416,7 @@ $$
 - $\nabla_{x^k} \log p(c | x^k)$：**这个告诉你：怎么让生成结果更像你要的条件**
 - $s$：引导强度（可以控制“像条件”还是“保持自然”）
 
-## 2.3 Related Papers
-
-### 2.3.1 TimeGrad
+## 2.3 TimeGrad
 
 Autoregressive Denoising Diffusion Models for Multivariate Probabilistic Time Series Forecasting (2021) 
 
@@ -473,7 +472,7 @@ $$
 > **TimeGrad 之所以叫 “Autoregressive”，是因为它是一步一步预测未来的时间点，每一步都依赖于前面已经预测的内容，这种结构就叫自回归。**
 >  它的“自回归性”体现在：使用 RNN 的隐藏状态 $h_{t-1}$ 来预测每一个时间步，并且每一个未来点是按顺序、递推地预测出来的。
 
-### 2.3.2 ScoreGrad
+## 2.4 ScoreGrad
 
 Multivariate Probabilistic Time Series Forecasting with Continuous Energy-based Generative Models (2021)
 
@@ -486,7 +485,7 @@ Multivariate Probabilistic Time Series Forecasting with Continuous Energy-based 
 | 模型结构是怎样的？     | 仍然是自回归结构，一步预测一步，适用于多变量时间序列         |
 | 表格说明了什么？       | ScoreGrad 尤其是 sub-VP SDE 效果更好，尤其在电力数据集上表现极好 |
 
-### 2.3.3 CSDI
+## 2.5 CSDI
 
 Conditional Score-based Diffusion Models for Probabilistic Time Series Imputation (2021)
 
@@ -499,7 +498,7 @@ Conditional Score-based Diffusion Models for Probabilistic Time Series Imputatio
 | 是否按时间顺序生成 | 是（autoregressive）    | 否，可以并行补全多个位置          |
 | 特点        | 适合 forecasting       | 适合 imputation（带 mask） |
 
-### 2.3.4 DSPD & CSPD
+## 2.5 DSPD & CSPD
 
 DSPD & CSPD: Modeling Temporal Data as Continuous Functions with Process Diffusion (2022)
 
@@ -549,7 +548,7 @@ DSPD & CSPD: Modeling Temporal Data as Continuous Functions with Process Diffusi
 
 > **CSPD ≠ ScoreGrad，但它可以看作是“ScoreGrad 在预测任务上的结构性进化版本”。**
 
-### 2.3.5 D³VAE
+## 2.6 D³VAE
 
 Generative Time Series Forecasting with Diffusion, Denoise, and Disentanglement (2022)
 
@@ -571,7 +570,7 @@ Generative Time Series Forecasting with Diffusion, Denoise, and Disentanglement 
 | ✅ 使用耦合扩散，理论上比 ScoreGrad / TimeGrad 更完整 | ❗ 训练过程高度依赖特定调参和初始化策略               |
 | ✅ 解耦 latent variable 提升解释性             | ❗ 未在标准 GluonTS 数据上做直接对比，结果可迁移性尚需验证 |
 
-### 2.3.6 TDSTF
+## 2.7 TDSTF
 
 Transformer-based Diffusion probabilistic model for Sparse Time series Forecasting (2023) 
 
@@ -589,7 +588,7 @@ TDSTF 模型受到 CSDI 的启发，主要用于 ICU 病人生命体征的稀疏
 - **优势：** TDSTF 在稀疏数据场景下表现优异，尤其适合医疗等对数据完整性要求高的领域。
 - **疑问：** 其三元组与 mask 的设计是否真的能泛化到其他稀疏场景？模型在数据极度缺失或噪声极大的情况下仍能保持优势吗？
 
-### 2.3.7 SSSDS4
+## 2.8 SSSDS4
 
 Diffusion-based Time Series Imputation and Forecasting with Structured State Space Models (2023) 
 
@@ -650,7 +649,7 @@ S4模型虽然高效，但是否会因其线性结构在处理高度非线性时
 
 ---
 
-### 2.3.8 DiffLoad
+## 2.9 DiffLoad
 
 Uncertainty Quantification in Load Forecasting with Diffusion Model (2023) 
 
@@ -673,9 +672,13 @@ DiffLoad本质上是一种序列到序列（seq2seq）模型，核心创新在�
 - Cauchy分布比高斯分布“尾巴更重”，即更容易生成极端值，对异常点（如突发负荷）更健壮。
 - 在实际负荷预测中，异常值是常见问题，Cauchy分布能更好地反映这种不确定性。
 
-### 2.3.9 TimeDiff
-
-TimeDiff: Non-autoregressive Conditional Diffusion Models for Time Series Prediction (2023) 
+## 2.10 TimeDiff
+TimeDiff: Non-autoregressive Conditional Diffusion Models for Time Series Prediction (ICML 2023) 
+### 2.10.4 Rethink
+significance level = 5%
+if P-value > significance level, accept null hypothesis, else reject
+null hypo: NOT stationary
+![[assets/Pasted image 20251210200415.png]]
 
 #### 核心问题：我们如何才能“一次性”地、且“和谐”地预测未来？
 
@@ -741,7 +744,7 @@ TimeDiff 的做法是，把上面两个“小花招”产生的结果 ($z_{mix}$
 *   研究者是如何识别出问题的（disharmony）。
 *   他们是如何“脑洞大开”地设计解决方案的（mixup & initialization）。
 *   他们是如何通过实验来验证自己想法的。
-### 2.3.10 TSDiff
+## 2.11 TSDiff
 #### 两种不同的“自我引导”策略
 
 论文提出了两种具体的“自我引导”方法，它们的区别在于“审视”和“修正”的标准不同。
@@ -783,16 +786,38 @@ TimeDiff 的做法是，把上面两个“小花招”产生的结果 ($z_{mix}$
 2.  **效率问题**：扩散模型为了生成高质量的样本，通常需要很多步的迭代（去噪），这使得它们的推理速度相对较慢。虽然比需要训练额外模型的引导方法要好，但在需要实时预测的场景下，这仍然是一个瓶颈。
 3.  **未来的融合**：我们再次回到那个问题：当大型语言模型（LLMs）展现出强大的序列建模能力时，我们是否应该考虑将这种精细的“概率引导”思想，与LLM的“常识推理”和“上下文理解”能力结合起来？也许未来的模型，既能像TSDiff一样给出精确的概率分布，又能像LLM一样理解事件的因果关系（比如“因为节假日，所以交通流量会异常增高”）。
 
-# 3 NsDiff
-Non-stationary Diffusion For Probabilistic Time Series Forecasting
-## 3.2 实验
+# 3 TMDM & NsDiff
+- Transformer-Modulated Diffusion Models for Probabilistic Multivariate Time Series Forecasting (ICLR 2024)
+- Non-stationary Diffusion For Probabilistic Time Series Forecasting (ICML 2025)
+## 3.1 Motivation
+- the existing methods pay less attention to whether the noise distribution can accurately capture the uncertainty of $y_{0:M}$ given $x_{0:N}$
 
-> [!QUESTIONS] 
-> To estimate uncertainty variation between the train and test datasets, we use the ratio of test variance to train variance, selecting the highest value across dimensions to capture non-stationary uncertainty.
-> 什么是测试方差和训练方差的比率？
+## 3.2 Method
+![[assets/Pasted image 20251207195207.png]]
+**Transformer component**(Left):
+$$q(\boldsymbol{z} \mid \mathscr{T}(\boldsymbol{x}_{0:N})) \sim \mathcal{N}(\tilde{\boldsymbol{\mu}}_z(\mathscr{T}(\boldsymbol{x}_{0:N})), \tilde{\boldsymbol{\sigma}}_z(\mathscr{T}(\boldsymbol{x}_{0:N})))$$
+$$z \sim \mathcal{N}(0, 1) \quad \text{and} \quad \hat{\boldsymbol{y}}_{0:M} \sim \mathcal{N}(\boldsymbol{\mu}_z(\boldsymbol{z}), \boldsymbol{\sigma}_z)$$
+The standard assumption is to avoid: Discontinuity in latent space, Discard stochasticity, Illegal sampling
+
+**Unified Optimization Objective**: maximize the evidence lower bound (ELBO) of the log marginal likelihood -> $\mathcal{L}_{\text{diffusion}}+\mathcal{L}_{\mathrm{cond}}$
+$\mathcal{L}_{\text{diffusion}}$: 
+- 该损失不仅更新扩散模型，还会**微妙地调整 (subtly adjusting)** 条件生成模型（Transformer/VAE），使其生成的条件表示 $\hat{\boldsymbol{y}}_{0:M}$ 更适合扩散过程。
+$\mathcal{L}_{\text{cond}}$: 
+- 确保 Transformer 能够准确估计条件均值 $\mathbb{E}[\boldsymbol{y}_{0:M} | \boldsymbol{x}_{0:N}]$（即让预测值 $\hat{\boldsymbol{y}}$ 尽可能准）。
+- 包含 KL 散度项 $\mathbf{D}_{KL}(q(z|\dots) \| p(z))$，用于约束隐变量 $z$ 的分布，防止过拟合（VAE 正则化）。
+
+## 3.3 Experiments
+mean estimation--NSformer
+![[assets/Pasted image 20251208213102.png]]
+![[assets/Pasted image 20251210204426.png]]
+![[assets/Pasted image 20251210204334.png]]
+- According to Table 5, the results of TMDM and NSformer are quite similar!
+## 3.4 Rethink
+![[assets/Pasted image 20251210172755.png]]
+![[assets/Pasted image 20251210172823.png]]
 
 # 4 D3U
-Diffusion-based Decoupled Deterministic and Uncertain Framework for Probabilistic Multivariate Time Series Forecasting
+Diffusion-based Decoupled Deterministic and Uncertain Framework for Probabilistic Multivariate Time Series Forecasting (ICLR 2025)
 ## 4.1 Motivation
 - Point forecasting models are less effective at modeling the residual component
 - Residual component tends to contain more uncertainty(epistemic and aleatoric)
@@ -810,6 +835,101 @@ Questions
 ![[assets/Pasted image 20251123165853.png]]
 - According to Table 1, the results of D3U and SparseVQ are quite similar!!
 - This similarity leads me to question whether the incorporation of probabilistic predictions and the utilization of diffusion models merely introduce randomness!
-## 4.4 Limitation
+## 4.4 Rethink
+Why D3U is effective??
+Cuze it's a point forecasting model with a **probabilistic forecasting shell**
 ![[assets/Pasted image 20251123170744.png]]Visualization of the Predictions of Eletricity (139th dimension). This case illustrates a  scenario with relatively low epistemic uncertainty. Probabilistic prediction: the mean of the diffusion model’s samples
 ![[assets/Pasted image 20251123170924.png]]Visualization of the Predictions of Solar (50th dimension). This case illustrates a scenario with relatively high epistemic uncertainty. Probabilistic prediction: the mean of the diffusion model’s samples.
+
+# 5 FALDA
+EFFECTIVE PROBABILISTIC TIME SERIES FORECASTING WITH FOURIER ADAPTIVE NOISE-SEPARATED DIFFUSION (ICLR 2026-reviewing)
+## 5.1 Motivation
+- Generic architecture -> Lack explicit inductive biases to capture distinctive temporal structures, such as non-stationary patterns------------???
+- Diffusion to model an undifferentiated residual -> entangle epistemic and aleatoric uncertainty
+## 5.2 Method
+- DMRR(Diffusion Model for Residual Regression) <=> D3U
+- FALDA(Fourier Adaptive Lite Diffusion Architecture): diffusion-based + Fourier decomposition; a lightweight denoiser DEMA (Decomposition MLP with AdaLN); CONSTRUCT the target series directly <=> FAN(iTransformer)
+![[assets/Pasted image 20251204154053.png]]
+## 5.3 Experiments
+![[assets/Pasted image 20251204155547.png]]
+- Just as D3U, the results of FALDA and iTransformer are quite similar!
+![[assets/Pasted image 20251204155815.png]]
+- the performace is about the same as D3U
+## 5.4 Rethink
+- NO novelty: the combination of D3U and FAN
+- The actual effect is minimal
+![[assets/Pasted image 20251204161427.png]]
+# 0 MY IDEA
+针对D3U
+1. Diffusion 部分没有很好学习到不确定性：
+2. 继续使用diffusion进行改进
+3. 换掉diffusion
+4. 点模型部分：
+5. 使用VQ- VAE(other)或者对iTransformer改进
+
+从残差学习入手
+* 目前的概率预测均值和方差是分开的，点预测负责均值，扩散负责方差，这就导致了加上扩散后对MSE，MSA的提升非常小
+* 残差学习可以解决这个问题
+
+# 6 Accuracy Law
+ACCURACY LAW FOR THE FUTURE OF DEEP TIME SERIES FORECASTING (2025)
+## 6.1 Motivation
+- The improvement in the performance of deep time series models on four standard benchmarks has **slowed** significantly over the past three years.
+- Unlike CV, achieving zero prediciton error is fundamentally **unattainable** due to the partially obervable and inherently uncertain nature of time series. More importantly, even human experts often **struggle to define** what constitutes the best possible prediction for a given time series.
+- Domain knowledge relies on human experts and is limited to specific areas, which cannot serve as a **general rule** for diverse and complex forecasting tasks focused on by the research community. Additionally, expert knowledge may result in a wrong judgment of the bottleneck due to **personal bias** or **human limitations**, which can be potentially broken by **data-driven methodolog**.
+![[assets/Pasted image 20251211105602.png]]
+## 6.2 Method
+### 6.2.1 Existing Predicability Measure
+- **平稳性 (Stationarity)：** 传统方法常用 ADF 检验 (Augmented Dickey-Fuller test) 来评估。ADF 统计量越小，意味着平稳性越高，潜在的可预测性也越高。
+- **熵值 (Entropy-based)：** 例如 ForeCA 方法，利用谱熵 (spectral entropy) 来量化。数值越高代表可预测性越强，这是一种与模型无关的指标。
+局限性：
+- 现有的可预测性度量大多是针对**整条序列 (entire series)** 设计的。
+- 这与深度学习模型当前主流的**序列到序列 (sequence-to-sequence)** 的滑窗预测范式**不一致**，导致评估上存在错位。
+### 6.2.2 Window-Wise Pattern Complexity
+1. **Splitting**: the continuous time windows with length (P + F), which can completely cover all the time points used in a single forecast.
+2. **Frequency Domain via FFT**: only retain **Amplitude Spectrum** and discard **Phase**. Why?
+	1. Frequency: The waveform in the time domain is too chaotic, while in the frequency domain it shows the 'energy distribution'
+	2. Phase: Phase represents when the wave starts. We only care about what kind of waves (amplitudes) are present in this window, not at which specific second they occur.  **time shift invariance**
+3. **Variance of Amplitudes**: Calculate the distribution variance of amplitude spectra for all windows. 
+$$
+Complexity(\mathbf{x}) = \text{tr}(\text{Cov}(\{\mathbf{A}_i\}))
+$$
+![[assets/Pasted image 20251211164558.png]]
+### 6.2.3 ACCURACY LAW
+为了找到数据复杂度与模型性能极限之间的关系，作者设计了非常严密的实验方案：
+- **Data：** 使用了大规模公开数据集 **LOTSA**。为了平衡不同领域的数据差异（Class Imbalance），作者从每个领域随机抽取了20条时间序列，最终组成了包含 **940条单变量时间序列** 的数据集。
+- **Models：** 选取了三种当前最先进（SOTA）的深度预测模型：**PatchTST, TimeMixer, DLinear**。
+- **Performance Proxy：** 对于每一条时间序列，作者将这三个模型中**表现最好的那个结果**记录下来，作为该任务目前技术上可达到的“最优性能”（Approximated Optimal Performance）。
+- **测试设置：** 统一采用 **输入96 / 预测96** 的标准设置。
+![[assets/Pasted image 20251211165210.png]]
+作者通过统计学方法证明了：**复杂度与误差（MSE）之间确实是指数关系**。
+- **线性依赖测试 (Pearson Correlation)：** LogMSE 与复杂度之间的皮尔逊相关系数高达 **77.67%**，表明存在极强的正相关。
+- **高阶依赖测试 (Ramsey RESET Test)**：针对 LogMSE，p值为 **0.85**（远大于0.05）。这意味着**不需要**引入高阶项（如平方项、立方项）来描述关系，简单的线性方程就足够完美了。
+基于上述实验，作者正式定义了精度定律的公式：
+$$\text{MSE} \approx \exp(\alpha \cdot \text{Complexity}(\mathbf{x})) - 1$$
+- **$Complexity(\mathbf{x})$**：作者提出的窗口级模式复杂度。
+- **$\alpha$**：增长系数，实验测得约为 0.0054。
+- **$-1$ 的含义：** 为了满足物理直觉。当复杂度为 0 时（完全可预测），$\exp(0) - 1 = 1 - 1 = 0$，即误差为 0。这符合“完美可预测数据应有零误差”的直觉。
+它为研究人员提供了两个实用的工具：
+1. 预测工具 (Predictive Tool)：在训练模型之前，你可以先算出数据的“复杂度”。代入公式，就能**预估**出目前最好的深度模型大概能跑到多少 MSE。
+2. 指导工具 (Prescriptive Tool)：它能识别出哪些任务已经“饱和”了。
+## 6.3 Experiments
+### 6.3.1 Overall Comparison
+![[assets/Pasted image 20251211170920.png]]
+- **击败传统“全序列”指标：**    
+    - 作者对比了传统的 ADF 检验（平稳性）、ForeCA（可预测性）和 ACF（自相关性）。        
+    - **结果：** 这些基于**整条序列 (series-wise)** 的传统指标与深度模型的最终性能（MSE/MAE）相关性极低（Pearson系数很小）。        
+    - **结论：** 这证实了传统统计学指标与现代深度预测范式之间存在“断层”，而新提出的指标填补了这一空白。
+        
+- **频域 (Frequency) 优于 时域 (Time)：**    
+    - 作者尝试了在时域上计算复杂度（使用动态时间规整 DTW, window-wise DTW）作为替代方案。        
+    - **结果：** 频域方法的相关性显著高于时域方法。        
+    - **原因：** 频域方法能更好地捕捉模式识别中的主要变化，且不受相位移动（Temporal shift）的干扰。
+        
+- **必须同时看“过去+未来” (P+F)：**    
+    - 实验发现，计算复杂度时如果只看输入的“过去窗口($P$)”或只看要预测的“未来窗口($F$)”，效果都不如**两者一起看 ($P+F$)**。        
+    - **原因：** 联合考虑 $P+F$ 能够建模数据的**联合分布 (Joint Distribution)** 和 **转换动力学 (Transition Dynamics)**，即不仅看数据长什么样，还要看它如何从过去演变到未来。
+### 6.3.2 PRACTICE 1: IDENTIFY SATURATED FORECASTING TASKS
+![[assets/Pasted image 20251211171354.png]]Finding 1. According to our proposed accuracy law, ETTh2, ETTm2, Electricity, Weather and Exchange-Rate can be considered as saturated, while Traffic still requires more investigation.
+### 6.3.3 PRACTICE 2: GUIDING LARGE TIME SERIES MODELS
+![[assets/Pasted image 20251211171627.png]]
